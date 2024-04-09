@@ -1,0 +1,165 @@
+{% extends "template.html" %}
+
+{% block title %}Ingresar rutas{% endblock %}
+
+
+{% block  content %}
+<div id="map" style="height: 500px;"></div>
+
+    <div class="container">
+        <form id="rutaForm">
+            <label for="nombreRuta">Nombre de la ruta:</label>
+            <input type="text" id="nombreRuta" name="nombreRuta" required>
+            <label for="colorRuta">Color de la ruta:</label>
+            <select id="colorRuta" name="colorRuta" required>
+                <option value="blue">Azul</option>
+                <option value="orange">Anaranjado</option>
+                <option value="green">Verde</option>
+                <option value="brown">Cafe</option>
+                <option value="silver">Plateado</option>
+                <option value="white">Blanco</option>
+                <option value="red">Rojo</option>
+                <option value="black">Negro</option>
+                <option value="yellow">Amarillo</option>
+                <option value="purple">Violeta</option>
+                <option value="pink">Rosa</option>
+                <option value="aquamarine">Agua</option>
+            </select>
+            <textarea id="comentario" name="comentario" rows="4" cols="50">
+
+            </textarea>
+            <br>
+            <input type="submit" value="Guardar Ruta">
+        </form>
+    </div>
+
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-draw"></script>
+    <script src="https://unpkg.com/@turf/turf@6.3.0/turf.min.js"></script>
+
+    <script>
+    var map = L.map('map').setView([13.6988, -89.1914], 8);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    var drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
+
+    var drawControl = new L.Control.Draw({
+        draw: {
+            polyline: true,
+            polygon: false,
+            circle: false,
+            rectangle: false,
+            marker: false,
+        },
+        edit: {
+            featureGroup: drawnItems,
+        },
+    });
+
+    map.addControl(drawControl);
+
+    // Dibuja las rutas almacenadas
+    {% for ruta in rutas %}
+        var geojsonData = {{ ruta.geojson_data|safe }};
+        var layer = L.geoJSON(geojsonData);
+        var colorRuta = '{{ ruta.color }}';
+        var layer = L.geoJSON(geojsonData, {
+            style: function (feature) {
+                return { color: colorRuta };
+            }
+        });
+
+        drawnItems.addLayer(layer);
+
+        var coordinates = geojsonData.geometry.coordinates;
+        var startCoord = coordinates[0];
+        var endCoord = coordinates[coordinates.length - 1];
+        var length = turf.length(geojsonData, { units: 'kilometers' });
+
+        // Agrega información del popup
+        layer.bindPopup('<b>{{ ruta.nombre }}</b><br>' +
+            'Coordenadas de inicio: ' + startCoord + '<br>' +
+            'Coordenadas de fin: ' + endCoord + '<br>' +
+            'Longitud de la ruta: ' + length.toFixed(2) + ' km<br>' +
+            'Comentario: ' + '{{ ruta.comentario }}'
+        );
+
+    {% endfor %}
+
+    map.on(L.Draw.Event.CREATED, function (event) {
+        var layer = event.layer;
+        drawnItems.addLayer(layer);
+        var geojsonData = layer.toGeoJSON();
+        mostrarFormulario(geojsonData);
+        var longitudRuta = calcularLongitudRuta(geojsonData);
+    });
+
+    fetch('{% url "map:obtener_clusters" %}')
+        .then(response => response.json())
+        .then(data => mostrarClustersEnMapa(data.clusters))
+        .catch(error => console.error('Error:', error));
+
+    function mostrarClustersEnMapa(clusters) {
+        clusters.forEach(cluster => {
+            var marker = L.marker([cluster.lat, cluster.Ing]).addTo(map);
+            marker.bindPopup(
+                '<b>' + cluster.name + '</b><br>' +
+                'Tipo: ' + cluster.tipo + '<br>' +
+                'Latitud:' + cluster.lat + '<br>'+
+                'Longituf:' + cluster.Ing + '<br>'+
+                'Número de Bandejas: ' + cluster.n_bandejas
+            );
+        });
+    }
+
+    function mostrarFormulario(geojsonData) {
+        var formulario = document.getElementById('rutaForm');
+
+        formulario.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            var nombreRuta = document.getElementById('nombreRuta').value;
+            var colorRuta = document.getElementById('colorRuta').value;
+
+            guardarRutaEnServidor(nombreRuta, geojsonData, colorRuta);
+        });
+    }
+
+    function calcularLongitudRuta(geojsonData) {
+        var length = turf.length(geojsonData, { units: 'kilometers' });
+        return length;
+    }
+
+    function guardarRutaEnServidor(nombreRuta, geojsonData, colorRuta,comentario) {
+        var data = {
+            nombre: nombreRuta,
+            geojson: geojsonData,
+            color: colorRuta,
+            comentario:comentario,
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+        };
+
+        fetch('{% url "map:guardar_ruta" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            // Cambiar el estilo de la ruta después de guardar
+            var layer = L.geoJSON(geojsonData, {
+                style: function (feature) {
+                    return { color: colorRuta };
+                }
+            });
+            drawnItems.addLayer(layer);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
+{% endblock  %}

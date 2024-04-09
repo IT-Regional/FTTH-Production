@@ -1,0 +1,31 @@
+<!-- gestionar_bandejas.html -->
+{% extends "template.html" %}
+
+{% block title %}Gestionar Bandejas - Mapas en Django{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h2>Gestionar Bandejas para el Cluster {{ cluster_id }}</h2>
+        <form method="post" action="{% url 'map:gestionar_bandejas' cluster_id %}">
+            {% csrf_token %}
+            {{ formset.management_form }}
+            {% for form in formset %}
+                    <div class="form-outline mb-4">
+                        <li>{{forloop.counter}}</li>
+                        {{ form.servicio.label_tag }}
+                        {{ form.servicio }}
+                        {{form.color.label_tag}}
+                        {{form.color}}
+                        {{form.perdida.label_tag}}
+                        {{form.perdida}}
+                        {{form.color_salida.label_tag}}
+                        {{form.color_salida}}
+                        {{form.servicio_salida.label_tag}}
+                        {{form.servicio_salida}}
+                        <li>{{forloop.counter}}</li>
+                    </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        </form>
+    </div>
+{% endblock %}

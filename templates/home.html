@@ -1,0 +1,18 @@
+<!-- home.html -->
+{% extends 'template.html' %}
+
+{% block title %}Mapas en Django - Home{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <!-- Contenido específico de la página home.html -->
+        <form method="post" action="{% url 'map:home' %}">
+            {% csrf_token %}
+            <!-- Resto del formulario -->
+        </form>
+        <div class="container my-5">
+            {{ map|safe }}
+            
+        </div>
+    </div>
+{% endblock %}

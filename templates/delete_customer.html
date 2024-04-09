@@ -1,0 +1,15 @@
+{% extends "template.html" %}
+
+{% block title %}Eliminar Cluster - Mapas en Django{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2>Eliminar Cluster</h2>
+        <p>¿Estás seguro de que deseas eliminar al cliente "{{ customer.nombre }}"?</p>
+        <form method="post" action="{% url 'users:delete_customer' customer.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Eliminar</button>
+            <a href="{% url 'users:view_customers' %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+{% endblock %}

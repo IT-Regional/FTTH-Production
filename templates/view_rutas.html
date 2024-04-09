@@ -1,0 +1,25 @@
+{% extends "template.html" %}
+
+{% block content %}
+    <h2>Lista de Rutas</h2>
+    {% if ruta %}
+        <table class="table table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="row">Nombre de la ruta</th>
+                    <th scope="row">Coordenada</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rutas in ruta %}
+                    <tr>
+                        <th scope="col">{{rutas.nombre}}</th>
+                        <th scope="col">{{rutas.geojson_data}}</th>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No hay rutas    
+    {% endif %}
+{% endblock  %}

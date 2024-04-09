@@ -1,0 +1,20 @@
+{% extends "template.html" %}
+
+{% block  content %}
+    <div class="container mt-5">
+        <h2 class="text-center">Detalles del Cluster</h2>
+        <br>
+        <ul>
+            <li><strong>Nombre:</strong> {{ cluster.name }}</li>
+            <li><strong>Dirección:</strong> {{ cluster.addres }}</li>
+            <li><strong>Latitud:</strong> {{ cluster.lat }}</li>
+            <li><strong>Longitud:</strong> {{ cluster.Ing }}</li>
+            <li><strong>Codigo del Cluster:</strong> {{ cluster.c_cluster }}</li>
+            <li><strong>Nombre del Fabricante:</strong> {{ cluster.fabricante}}</li>
+            <li><strong>Tipo de Caja:</strong> {{ cluster.tipo}}</li>
+            <li><strong>Numero de Bandejas:</strong> {{ cluster.n_bandejas}}</li>
+            <!-- Agrega más detalles según sea necesario -->
+        </ul>
+        <a href="{% url 'map:view_clusters' %}" class="btn btn-primary">Volver a la lista de clusters</a>
+    </div>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends "template.html" %}
+
+{% block title %}Editar Cluster - Mapas en Django{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2>Editar Cluster</h2>
+        <form method="post" action="{% url 'users:edit_customer' customer.id %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            {% comment %} <div class="row mb-4">
+            <div class="col">
+                <div data-mdb-input-init class="form-outline">
+                    <input type="text" id="form3Example1" class="form-control" name="lat" value="{{ cluster.lat }}">
+                    <label class="form-label" for="form3Example1">Latitud</label>
+                </div>
+            </div>
+            <div class="col">
+                <div data-mdb-input-init class="form-outline">
+                    <input type="text" id="form3Example2" class="form-control" name="Ing" value="{{ cluster.lng }}">
+                    <label class="form-label" for="form3Example2">Longitud</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nombre del Cluster input -->
+        <div data-mdb-input-init class="form-outline mb-4">
+            <input type="text" id="form3Example3" class="form-control" name="name" value="{{ cluster.name }}">
+            <label class="form-label" for="form3Example3">Nombre del Cluster</label>
+        </div>
+
+        <!-- Dirección del Cluster input -->
+        <div data-mdb-input-init class="form-outline mb-4">
+            <input type="text" id="form3Example4" class="form-control" name="addres" value="{{ cluster.addres }}">
+            <label class="form-label" for="form3Example4">Dirección del Cluster</label>
+        </div>
+
+        <!-- Código del Cluster input -->
+        <div data-mdb-input-init class="form-outline mb-4">
+            <input type="text" id="form3Example5" class="form-control" name="c_cluster" value="{{ cluster.c_cluster }}" readonly="true">
+            <label class="form-label" for="form3Example5">Código del Cluster</label>
+        </div>
+
+        <!-- Tipo input (combobox) -->
+        <div class="row mb-4">
+            <div class="col">
+                <div data-mdb-input-init class="form-outline">
+                    <select id="tipo" class="form-select" name="tipo">
+                        {% for choice in Cluster.TIPO_CHOICES %}
+                            <option value="{{ choice.0 }}" {% if choice.0 == cluster.tipo %}selected{% endif %}>{{ choice.1 }}</option>
+                        {% endfor %}
+                    </select>
+                    <label class="form-label" for="tipo">Tipo</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fabricante input (combobox) -->
+        <div class="row mb-4">
+            <div class="col">
+                <div data-mdb-input-init class="form-outline">
+                    <select id="fabricante" class="form-select" name="fabricante">
+                        {% for choice in Cluster.FABRICANTE_CHOICES %}
+                            <option value="{{ choice.0 }}" {% if choice.0 == cluster.fabricante %}selected{% endif %}>{{ choice.1 }}</option>
+                        {% endfor %}
+                    </select>
+                    <label class="form-label" for="fabricante">Fabricante</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Número de Bandejas input (combobox) -->
+        <div class="row mb-4">
+            <div class="col">
+                <div data-mdb-input-init class="form-outline">
+                    <select id="n_bandejas" class="form-select" name="n_bandejas">
+                        {% for choice in Cluster.BANDEJAS_CHOICES %}
+                            <option value="{{ choice.0 }}" {% if choice.0 == cluster.n_bandejas %}selected{% endif %}>{{ choice.1 }}</option>
+                        {% endfor %}
+                    </select>
+                    <label class="form-label" for="n_bandejas">Número de Bandejas</label>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-4"> {% endcomment %}
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        </form>
+    </div>
+{% endblock %}

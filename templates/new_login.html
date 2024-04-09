@@ -1,0 +1,25 @@
+{% extends "template_login.html" %}
+
+{% block  title %}FTTH Sentinel{% endblock  %}
+
+{% block content  %}
+
+    <div class="px-4 py-5 my-5 text-center">
+        <img class="d-block mx-auto mb-4" src="https://icon-library.com/images/fiber-icon/fiber-icon-1.jpg" width="100" height="57">
+        <h1 class="display-5 fw-bold text-body-emphasis">Inicia Sesion</h1>
+        <div class="col-md-10 mx-auto col-lg-5">
+            <form class="p-4 p-md-5 border rounded-3 bg-body-tertiary" method="post">
+                {% csrf_token %}
+                <div class="form-floating mb-3">
+                    <input class="form-control" id="floatingInput" name="username">
+                    <label for="floatingInput">Nombre de Usuario</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input class="form-control" id="password" name="password">
+                    <label for="password">Contraseña</label>
+                </div>
+                <button class="w-100 btn btn-lg btn-primary" type="submit">Ingresar</button>
+            </form>
+        </div>
+    </div>
+{% endblock  %}

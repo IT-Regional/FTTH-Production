@@ -1,0 +1,29 @@
+<!-- editar_bandejas.html -->
+{% extends "template.html" %}
+
+{% block title %}Editar Bandejas - Mapas en Django{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h2>Editar Bandejas para el Cluster {{ cluster_id }}</h2>
+        <form method="post" action="{% url 'map:editar_fusiones' cluster_id %}">
+            {% csrf_token %}
+            {{ formset.management_form }}
+            {% for form in formset %}
+                <!-- ... tu código de formulario ... -->
+                {{ form.servicio.label_tag }}
+                {{ form.servicio }}
+                {{ form.color.label_tag }}
+                {{ form.color }}
+                {{ form.perdida.label_tag }}
+                {{ form.perdida }}
+                {{ form.color_salida.label_tag }}
+                {{ form.color_salida }}
+                {{ form.servicio_salida.label_tag }}
+                {{ form.servicio_salida }}
+                <br>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        </form>
+    </div>
+{% endblock %}

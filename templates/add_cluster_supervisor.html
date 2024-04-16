@@ -1,42 +1,26 @@
-{% extends "template.html" %}
+{% extends "template_supervisor.html" %}
 
-{% block title %}
-    Register a Customer boludo
-{% endblock  %}
+{% block title  %}Agregar Cluster{% endblock   %}
 
 {% block content %}
-     <form method="post" action="{% url 'users:register_customer' %}">
+    <form method="post" action="{% url 'map:home_employee' %}">
     {% csrf_token %}
   <div class="row mb-4">
     <div class="col">
       <div data-mdb-input-init class="form-outline">
-        <input type="text" id="form3Example1" class="form-control"  name="nombre">
-        <label class="form-label" for="form3Example1">Nombres</label>
+        <input type="text" id="form3Example1" class="form-control" / name="lat">
+        <label class="form-label" for="form3Example1">Latitud</label>
       </div>
     </div>
     <div class="col">
       <div data-mdb-input-init class="form-outline">
-        <input type="text" id="form3Example2" class="form-control"  name="apellido"/>
-        <label class="form-label" for="form3Example2">Apellidos</label>
-      </div>
-    </div>
-  </div>
-  <div class="row mb-4">
-    <div class="col">
-      <div data-mdb-input-init class="form-outline">
-        <input type="email" id="form3Example1" class="form-control"  name="email">
-        <label class="form-label" for="form3Example1">Email</label>
-      </div>
-    </div>
-    <div class="col">
-      <div data-mdb-input-init class="form-outline">
-        <input type="text" id="form3Example2" class="form-control"  name="addres"/>
-        <label class="form-label" for="form3Example2">Direccion</label>
+        <input type="text" id="form3Example2" class="form-control"  name="Ing"/>
+        <label class="form-label" for="form3Example2">Longitud</label>
       </div>
     </div>
   </div>
 
-  {% comment %} <div data-mdb-input-init class="form-outline mb-4">
+  <div data-mdb-input-init class="form-outline mb-4">
     <input type="text" id="form3Example3" class="form-control" name="name"/>
     <label class="form-label" for="form3Example3">Nombre del Cluster</label>
   </div>
@@ -64,16 +48,6 @@
     </div>
     <div class="col">
       <div data-mdb-input-init class="form-outline">
-                    <select id="fabricante" class="form-select" name="fabricante">
-                        {% for choice in Cluster.FABRICANTE_CHOICES %}
-                            <option value="{{ choice.0 }}">{{ choice.1 }}</option>
-                        {% endfor %}
-                    </select>
-                    <label class="form-label" for="fabricante">Fabricante</label>
-                </div>
-    </div>
-    <div class="col">
-      <div data-mdb-input-init class="form-outline">
                     <select id="fabricante" class="form-select" name="n_bandejas">
                         {% for choice in Cluster.BANDEJAS_CHOICES %}
                             <option value="{{ choice.0 }}">{{ choice.1 }}</option>
@@ -82,10 +56,39 @@
                     <label class="form-label" for="fabricante">Numero de  Bandejas</label>
                 </div>
     </div>
-  </div> {% endcomment %}
+    <div class="col">
+        <div data-mdb-input-init class="form-outline">
+            <select id="fusiones" class="form-select" name="n_fusiones">
+                {% for choice in Cluster.FUSIONES_CHOICES  %}
+                  <option value="{{choice.0}}">{{choice.1}}</option>
+                {% endfor %}
+            </select>
+            <label class="form-label" for="n_fusiones">Numero de Fusiones</label>
+          </div>
+        </div>
+        <div class="col">
+        <div data-mdb-input-init class="form-outline">
+            <select id="fusiones" class="form-select" name="colors">
+                {% for choice in Cluster.COLORS_CHOICES  %}
+                  <option value="{{choice.0}}">{{choice.1}}</option>
+                {% endfor %}
+            </select>
+            <label class="form-label" for="n_fusiones">Color de Tubo</label>
+          </div>
+        </div>
+        <div data-mdb-input-init class="form-outline">
+            <select id="fusiones" class="form-select" name="colors">
+                {% for choice in Cluster.TIPOS_CHOICES  %}
+                  <option value="{{choice.0}}">{{choice.1}}</option>
+                {% endfor %}
+            </select>
+            <label class="form-label" for="n_fusiones">Tipo</label>
+          </div>
+        </div>
+  </div>
 
 
-  <button class="btn btn-primary btn-block mb-4" type="submit">Agregar Cliente</button>
+  <button class="btn btn-primary btn-block mb-4" type="submit">Agregar Cluster</button>
 
 </form>
 {% endblock  %}

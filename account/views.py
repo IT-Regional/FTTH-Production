@@ -52,6 +52,9 @@ def login_view(request):
             elif user is not None and user.is_employee:
                 login(request, user)
                 return redirect('map:home_employee')
+            elif user is not None and user.is_customer:
+                login(request, user)
+                return redirect('map:home_customer')
             else:
                 msg= 'invalid credentials'
         else:

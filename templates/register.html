@@ -37,6 +37,8 @@
                     Login page
                 {% endif %}
               </span>
+              <br>
+              <br>
                 <form  method="post">
                     {% csrf_token %}
                   <div class="form-group first">
@@ -56,19 +58,19 @@
                       {{ form.password2 }}
                   </div>
                   <div class="d-flex mb-5 align-items-center">
-                    <label class="control control--checkbox mb-0"><span class="caption">Admin</span>
+                    <label class="control control--checkbox mb-0"><span class="caption">Administrador</span>
                         {{ form.is_admin }}
                       <div class="control__indicator"></div>
                     </label>
                   </div>
                   <div class="d-flex mb-5 align-items-center">
-                    <label class="control control--checkbox mb-0"><span class="caption">customer</span>
+                    <label class="control control--checkbox mb-0"><span class="caption">Tecnico</span>
                         {{ form.is_customer }}
                       <div class="control__indicator"></div>
                     </label>
                   </div>
                   <div class="d-flex mb-5 align-items-center">
-                    <label class="control control--checkbox mb-0"><span class="caption">employee</span>
+                    <label class="control control--checkbox mb-0"><span class="caption">Supervisor</span>
                         {{ form.is_employee }}
                       <div class="control__indicator"></div>
                     </label>

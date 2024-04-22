@@ -10,6 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from django.http import JsonResponse
 from django.forms.models import BaseModelFormSet
+from django.templatetags.static import static
 
 
 def home_map(request):
@@ -32,6 +33,12 @@ def home_map(request):
     drawn_items = folium.FeatureGroup()
     initialMap.add_child(drawn_items)
 
+    layer_groups = {
+        'mufa': folium.FeatureGroup(name='mufa'),
+        'nap': folium.FeatureGroup(name='nap'),
+        'cliente': folium.FeatureGroup(name='cliente'),
+    }
+
     for idx, location in enumerate(locations, start=1):
         coordinates = (location.lat, location.Ing)
         iframe = branca.element.IFrame(
@@ -53,34 +60,34 @@ def home_map(request):
         url = "https://beenet.com.sv/wp-content/images/{}".format
         if location.tipo == "mufa":
             icon_image = url("mufa-removebg-preview.png")
+            layer_groups['mufa'].add_child(folium.Marker(coordinates, popup, icon=folium.Icon(icon_image, icon_size=(40, 40), icon_anchor=(22, 20))))
         elif location.tipo == "nap":
             icon_image = url("nap-removebg-preview.png")
+            layer_groups['nap'].add_child(folium.Marker(coordinates, popup, icon=folium.Icon(icon_image, icon_size=(40, 40), icon_anchor=(22, 20))))
         else:
+            if 'Clientes' not in layer_groups:
+                layer_groups['cliente'] = folium.FeatureGroup(name='Clientes')
             icon_image = url("cliente-removebg-preview.png")
+            layer_groups['cliente'].add_child(folium.Marker(coordinates, popup, icon=folium.Icon(icon_image, icon_size=(40, 40), icon_anchor=(22, 20))))
 
-        icon = folium.CustomIcon(
-            icon_image,
-            icon_size=(40, 40),
-            icon_anchor=(22, 20),
+    for ruta in Ruta.objects.all():
+        geojson_data = json.loads(ruta.geojson_data)
+        coordinates_start = geojson_data["geometry"]["coordinates"][0]
+        coordinates_end = geojson_data["geometry"]["coordinates"][-1]
+        layer = folium.GeoJson(geojson_data, name=ruta.nombre)
+        folium.GeoJson(geojson_data).add_to(drawn_items)
+        popup_html = (
+            f"<b>Nombre de la ruta: {ruta.nombre}</b><br>"
+            f"<b>Coordenadas de Inicio:</b> {coordinates_start}</br>"
+            f"<b>Coordenadas de fin:</b> {coordinates_end}</br>"
         )
-        folium.Marker(coordinates, popup, icon=icon).add_to(initialMap)
+        layer.add_child(folium.Popup(popup_html, max_width=300))
+        layer.add_to(drawn_items)
 
-        for ruta in Ruta.objects.all():
-            geojson_data = json.loads(ruta.geojson_data)
-            coordinates_start = geojson_data["geometry"]["coordinates"][0]
-            coordinates_end = geojson_data["geometry"]["coordinates"][-1]
-            layer = folium.GeoJson(geojson_data, name=ruta.nombre)
-            folium.GeoJson(geojson_data).add_to(drawn_items)
-            popup_html = (
-                f"<b>Nombre de la ruta: {ruta.nombre}</b><br>"
-                f"<b>Coordenadas de Inicio:</b> {coordinates_start}</br>"
-                f"<b>Coordenadas de fin:</b> {coordinates_end}</br>"
-            )
-            layer.add_child(folium.Popup(popup_html, max_width=300))
-            layer.add_to(drawn_items)
+    for layer_group in layer_groups.values():
+        initialMap.add_child(layer_group)
 
-    # Añadir control de capas (Layers Control)
-    """ folium.LayerControl().add_to(initialMap) """
+    folium.LayerControl().add_to(initialMap)
 
     context = {"map": initialMap._repr_html_(), "locations": locations, "form": form}
     return render(request, "home.html", context)
@@ -98,7 +105,7 @@ def home_customer(request):
     if request.method == "POST":
         if form.is_valid():
             form.save()
-            return redirect("map:home")
+            return redirect("map:home_customer")
 
     latitud = 13.7942
     longitud = -88.8965
@@ -110,6 +117,12 @@ def home_customer(request):
     )
     drawn_items = folium.FeatureGroup()
     initialMap.add_child(drawn_items)
+
+    layer_groups = {
+        'mufa': folium.FeatureGroup(name='mufa'),
+        'nap': folium.FeatureGroup(name='nap'),
+        'cliente': folium.FeatureGroup(name='cliente'),
+    }
 
     for idx, location in enumerate(locations, start=1):
         coordinates = (location.lat, location.Ing)
@@ -132,37 +145,38 @@ def home_customer(request):
         url = "https://beenet.com.sv/wp-content/images/{}".format
         if location.tipo == "mufa":
             icon_image = url("mufa-removebg-preview.png")
+            layer_groups['mufa'].add_child(folium.Marker(coordinates, popup, icon=folium.Icon(icon_image, icon_size=(40, 40), icon_anchor=(22, 20))))
         elif location.tipo == "nap":
             icon_image = url("nap-removebg-preview.png")
+            layer_groups['nap'].add_child(folium.Marker(coordinates, popup, icon=folium.Icon(icon_image, icon_size=(40, 40), icon_anchor=(22, 20))))
         else:
+            if 'Clientes' not in layer_groups:
+                layer_groups['cliente'] = folium.FeatureGroup(name='Clientes')
             icon_image = url("cliente-removebg-preview.png")
+            layer_groups['cliente'].add_child(folium.Marker(coordinates, popup, icon=folium.Icon(icon_image, icon_size=(40, 40), icon_anchor=(22, 20))))
 
-        icon = folium.CustomIcon(
-            icon_image,
-            icon_size=(40, 40),
-            icon_anchor=(22, 20),
+    for ruta in Ruta.objects.all():
+        geojson_data = json.loads(ruta.geojson_data)
+        coordinates_start = geojson_data["geometry"]["coordinates"][0]
+        coordinates_end = geojson_data["geometry"]["coordinates"][-1]
+        layer = folium.GeoJson(geojson_data, name=ruta.nombre)
+        folium.GeoJson(geojson_data).add_to(drawn_items)
+        popup_html = (
+            f"<b>Nombre de la ruta: {ruta.nombre}</b><br>"
+            f"<b>Coordenadas de Inicio:</b> {coordinates_start}</br>"
+            f"<b>Coordenadas de fin:</b> {coordinates_end}</br>"
         )
-        folium.Marker(coordinates, popup, icon=icon).add_to(initialMap)
+        layer.add_child(folium.Popup(popup_html, max_width=300))
+        layer.add_to(drawn_items)
 
-        for ruta in Ruta.objects.all():
-            geojson_data = json.loads(ruta.geojson_data)
-            coordinates_start = geojson_data["geometry"]["coordinates"][0]
-            coordinates_end = geojson_data["geometry"]["coordinates"][-1]
-            layer = folium.GeoJson(geojson_data, name=ruta.nombre)
-            folium.GeoJson(geojson_data).add_to(drawn_items)
-            popup_html = (
-                f"<b>Nombre de la ruta: {ruta.nombre}</b><br>"
-                f"<b>Coordenadas de Inicio:</b> {coordinates_start}</br>"
-                f"<b>Coordenadas de fin:</b> {coordinates_end}</br>"
-            )
-            layer.add_child(folium.Popup(popup_html, max_width=300))
-            layer.add_to(drawn_items)
+    for layer_group in layer_groups.values():
+        initialMap.add_child(layer_group)
 
-    # Añadir control de capas (Layers Control)
-    """ folium.LayerControl().add_to(initialMap) """
+    folium.LayerControl().add_to(initialMap)
 
     context = {"map": initialMap._repr_html_(), "locations": locations, "form": form}
     return render(request, "home_customer.html", context)
+
 
 
 def home_employee(request):
@@ -172,7 +186,7 @@ def home_employee(request):
     if request.method == "POST":
         if form.is_valid():
             form.save()
-            return redirect("map:home")
+            return redirect("map:home_employee")
 
     latitud = 13.7942
     longitud = -88.8965
@@ -184,6 +198,12 @@ def home_employee(request):
     )
     drawn_items = folium.FeatureGroup()
     initialMap.add_child(drawn_items)
+
+    layer_groups = {
+        'mufa': folium.FeatureGroup(name='mufa'),
+        'nap': folium.FeatureGroup(name='nap'),
+        'cliente': folium.FeatureGroup(name='cliente'),
+    }
 
     for idx, location in enumerate(locations, start=1):
         coordinates = (location.lat, location.Ing)
@@ -206,37 +226,38 @@ def home_employee(request):
         url = "https://beenet.com.sv/wp-content/images/{}".format
         if location.tipo == "mufa":
             icon_image = url("mufa-removebg-preview.png")
+            layer_groups['mufa'].add_child(folium.Marker(coordinates, popup, icon=folium.Icon(icon_image, icon_size=(40, 40), icon_anchor=(22, 20))))
         elif location.tipo == "nap":
             icon_image = url("nap-removebg-preview.png")
+            layer_groups['nap'].add_child(folium.Marker(coordinates, popup, icon=folium.Icon(icon_image, icon_size=(40, 40), icon_anchor=(22, 20))))
         else:
+            if 'Clientes' not in layer_groups:
+                layer_groups['cliente'] = folium.FeatureGroup(name='Clientes')
             icon_image = url("cliente-removebg-preview.png")
+            layer_groups['cliente'].add_child(folium.Marker(coordinates, popup, icon=folium.Icon(icon_image, icon_size=(40, 40), icon_anchor=(22, 20))))
 
-        icon = folium.CustomIcon(
-            icon_image,
-            icon_size=(40, 40),
-            icon_anchor=(22, 20),
+    for ruta in Ruta.objects.all():
+        geojson_data = json.loads(ruta.geojson_data)
+        coordinates_start = geojson_data["geometry"]["coordinates"][0]
+        coordinates_end = geojson_data["geometry"]["coordinates"][-1]
+        layer = folium.GeoJson(geojson_data, name=ruta.nombre)
+        folium.GeoJson(geojson_data).add_to(drawn_items)
+        popup_html = (
+            f"<b>Nombre de la ruta: {ruta.nombre}</b><br>"
+            f"<b>Coordenadas de Inicio:</b> {coordinates_start}</br>"
+            f"<b>Coordenadas de fin:</b> {coordinates_end}</br>"
         )
-        folium.Marker(coordinates, popup, icon=icon).add_to(initialMap)
+        layer.add_child(folium.Popup(popup_html, max_width=300))
+        layer.add_to(drawn_items)
 
-        for ruta in Ruta.objects.all():
-            geojson_data = json.loads(ruta.geojson_data)
-            coordinates_start = geojson_data["geometry"]["coordinates"][0]
-            coordinates_end = geojson_data["geometry"]["coordinates"][-1]
-            layer = folium.GeoJson(geojson_data, name=ruta.nombre)
-            folium.GeoJson(geojson_data).add_to(drawn_items)
-            popup_html = (
-                f"<b>Nombre de la ruta: {ruta.nombre}</b><br>"
-                f"<b>Coordenadas de Inicio:</b> {coordinates_start}</br>"
-                f"<b>Coordenadas de fin:</b> {coordinates_end}</br>"
-            )
-            layer.add_child(folium.Popup(popup_html, max_width=300))
-            layer.add_to(drawn_items)
+    for layer_group in layer_groups.values():
+        initialMap.add_child(layer_group)
 
-    # Añadir control de capas (Layers Control)
-    """ folium.LayerControl().add_to(initialMap) """
+    folium.LayerControl().add_to(initialMap)
 
     context = {"map": initialMap._repr_html_(), "locations": locations, "form": form}
     return render(request, "employee.html", context)
+
 
 
 def add_cluster(request):
